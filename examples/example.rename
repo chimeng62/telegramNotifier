@@ -1,0 +1,82 @@
+#include <Arduino.h>
+#include <WiFiManager.h>
+// #include <AsyncTCP.h>
+// #include <ESPAsyncWebServer.h>
+// #include <ArduinoJson.h>
+// #include <ESPmDNS.h>
+//#include "web/web_ui_assets.h"
+#include "telegramNotifier.h"
+
+WiFiManager wifiManager;
+
+// Replace with your actual bot token and chat ID
+char botToken[64] = "tokenxxxxx";
+char groupChatID[64] = "chatidxxxxxx";
+
+String customMessageFormatter(const String& label, const String& state, const String& duration) {
+    String message;
+    String formattedLabel = label;  // Create a new variable for the modified label
+
+    // Format the label based on RCB name
+    if (formattedLabel == "first_floor") {
+        formattedLabel = "កងវ៉ា សម្លេង ជាន់ទី1";  // First floor in Khmer
+    } else if (formattedLabel == "second_floor") {
+        formattedLabel = "កងវ៉ា សម្លេង ជាន់ទី2";  // Second floor in Khmer
+    }
+
+    // If sound is above threshold, indicate swiftlet music is playing
+    if (state == "on") {
+        message += "✅🔊 មេនសម្លេង! | " + formattedLabel + "​​​ 🔊✅\n";  // Sound playing
+    }
+    // If sound is below threshold, indicate sound is off
+    else {
+        message += "🚨🔇 ដាច់សម្លេង | " + formattedLabel + " 🔇🚨\n";  // Sound off
+    }
+
+    // Optionally add duration if provided
+    if (duration.length() > 0) {
+        message += "Duration: " + duration + " seconds\n";
+    }
+
+    return message;
+}
+
+// Create an instance of TelegramNotifier with the custom callback
+//Step 1: 
+TelegramNotifier telegramNotifier;
+
+const int ledPin = LED_BUILTIN;
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000); // Safety delay to ensure Serial is ready
+
+  pinMode(ledPin, OUTPUT);  // Set pin to output mode
+
+  // ------- Wi-Fi connection --------
+  bool is_wifi_connected = wifiManager.autoConnect();
+  if (!is_wifi_connected) {
+    Serial.println("Failed to connect to WiFi");
+    // ESP will reboot here
+  } else {
+    // Successfully connected to Wi-Fi
+    Serial.println("WiFi connected... :)");
+    digitalWrite(ledPin, HIGH);  // Turn on the LED to indicate success
+    
+    //Step 2: set config
+    telegramNotifier.setConfig(botToken, groupChatID, customMessageFormatter);   
+    // Send a test message to Telegram with the custom message formatter
+    telegramNotifier.sendTelegramMessage("first_floor", "on");
+    delay(5000); // Wait for the message to be sent
+    
+    telegramNotifier.sendTelegramMessage("second_floor", "off", "10");
+    delay(2000); // Wait for the message to be sent
+  }
+}
+
+void loop() {
+  // The loop is currently empty, as this is just to test the TelegramNotifier
+  // You can add further logic here for periodic message sending or other tasks.
+  Serial.print("wait for response duration: ");
+  Serial.println(telegramNotifier.waitForResponse);
+}
