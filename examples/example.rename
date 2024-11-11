@@ -65,6 +65,9 @@ void setup() {
     
     //Step 2: set config
     telegramNotifier.setConfig(botToken, groupChatID, customMessageFormatter);   
+    //Optional: increase if telegram send duplicating messages
+    telegramNotifier.setWaitForResponse(8000); //seconds
+    
     // Send a test message to Telegram with the custom message formatter
     telegramNotifier.sendTelegramMessage("first_floor", "on");
     delay(5000); // Wait for the message to be sent

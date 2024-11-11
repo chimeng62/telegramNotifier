@@ -1,41 +1,25 @@
-# WebServerAndSocket Library
+# TelegramNotifier Library
 
-A simple and flexible library designed for ESP32 devices to integrate an HTTP server and WebSocket functionality in a single class. This library provides a streamlined way to handle WebSocket connections, manage mDNS for easy hostname access, and serve dynamic HTML content over HTTP.
+`TelegramNotifier` is an Arduino library that simplifies the process of sending notifications to a Telegram bot. This library allows you to set up a bot with a chat ID and offers a customizable message formatting option.
 
 ## Features
-- **HTTP Server**: Serves static HTML content on the root URL (`/`).
-- **WebSocket Support**: Allows bi-directional communication with WebSocket clients connected at `/ws`.
-- **mDNS Support**: Sets up mDNS with a custom hostname, simplifying network access.
-- **Event Callbacks**: Customizable callbacks for handling WebSocket messages and events.
-- **Client Tracking**: Monitors and provides the count of active WebSocket clients.
+- **Easy configuration**: Initialize with a bot token and chat ID.
+- **Custom message formatting**: Use a callback function to create custom message formats.
+- **Secure connection**: Utilizes a secure WiFi client with Telegram's root certificate for HTTPS requests.
+- **Adjustable response timeout**: Control the waiting period for server responses to avoid duplicate messages.
 
-## Installation
-Include the following dependencies in your project:
-- [`AsyncTCP`](https://github.com/me-no-dev/AsyncTCP)
-- [`ESPAsyncWebServer`](https://github.com/me-no-dev/ESPAsyncWebServer)
-- [`ESPmDNS`](https://www.arduino.cc/reference/en/libraries/esp-mdns/)
+## Getting Started
 
-## Usage
+### Prerequisites
+- Arduino-compatible device with WiFi capabilities (e.g., ESP8266, ESP32).
+- Telegram Bot API token.
+- Chat ID of the user or group where notifications will be sent.
 
-### 1. Basic Setup
+### Installation
+1. Clone or download this repository into your Arduino `libraries` folder.
+2. Include the library in your Arduino sketch:
+   ```cpp
+   #include <TelegramNotifier.h>
 
-Create an instance of `WebServerAndSocket`, specifying the HTTP port:
-```cpp
-#include <WebServerAndSocket.h>
-
-WebServerAndSocket server(80);  // Set up on HTTP port 80
-
-void setup() {
-    Serial.begin(115200);
-
-    server.setMdnsName("my-device");   // Optional: Set custom mDNS name
-    server.setHtmlContent("<h1>Hello, ESP32!</h1>");  // Set HTML content for HTTP server
-    server.begin();                    // Start HTTP server and WebSocket
-
-    server.setMessageHandler(onMessageReceived);   // Set message handler
-    server.setWebSocketEventCallback(onEvent);     // Set WebSocket event callback
-}
-
-void loop() {
-    server.cleanupWebsocketClients();  // Call this regularly to handle WebSocket clients
-}
+### Usage
+See example
